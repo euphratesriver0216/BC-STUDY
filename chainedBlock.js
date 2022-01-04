@@ -4,12 +4,11 @@ const fs = require('fs')
 const merkle = require('merkle')
 const cryptojs = require('crypto-js')   //암호화
 const random = require('random')
-const { response } = require('express')
+
 
 const BLOCK_GENERATION_INTERVAL = 10       // 10초마다 SECOND 블럭이 생성되는 간격
 const DIFFICULTY_ADJUSTMENT_INTERVAL = 10  // 10개마다 in block 블럭마다 난이도가 조절되는 간격
 //두 값을 가지고 블럭이 생성되는시간 과 실제로 생성되는 시간과 다를 수 있기 때문에 조절해줘야한다.
-
 
 
 class Block {
@@ -32,7 +31,7 @@ class BlockHeader {
 }
 function getVersion() {
     const package = fs.readFileSync("package.json")         //package.json 버전 불로오기
-    // console.log(JSON.parse(package).version) //화인해보기  npm init했던 버젼
+    // console.log(JSON.parse(package).version)             //화인해보기  npm init했던 버젼
     return JSON.parse(package).version                      //버전 값 리턴
 }
 //getVersion()
@@ -64,15 +63,9 @@ function getBlocks() {
     return Blocks
 }
 
-module.exports={
-	Blocks, getLastBlock
-
-
 function getLastBlock() {
     return Blocks[Blocks.length - 1] //저번에만든 블럭 불러오는거 -1
 }
-
-
 
 
 
@@ -84,12 +77,18 @@ function createHash(data) {  //date를 인자로 받아서 해시를 만들겟�
     return hash
 }
 
-function calculateHash(version, index, previousHash, tim)
+
+function calculateHash(version, index, previousHash, timestamp, merkleRoot, 
+	difficulty, nonce) {
+		const blockString = version + index + previousHash + timestamp + merkleRoot + difficulty + nonce
+		const hash = cryptojs.SHA256(blockString).toString()
+		return hash
+	}
 
 
 const genesisblock = creatGenesisBlock()   //최초블럭체인
 // const testHash = createHash(block) //최초 블럭체인 값을 인자로넣어줌 
-console.log(genesisblock)
+console.log(genesisBlock)
 
 function nextBlock(bodyData) {
     const prevBlock = getLastBlock()
@@ -148,7 +147,7 @@ function hexToBinary(s){
         '8' : '1000', '9':'1001','A' : '1010', 'B':'1011',
         'C' : '1100', 'D':'1101','E' : '1110', 'F':'1111',
     }
-
+    var ret ="";
     for(var i = 0; i <s.length; i++){
         if (lookupTable[s[i]]){ //
             ret += lookupTable[s[i]];

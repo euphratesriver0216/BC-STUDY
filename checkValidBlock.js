@@ -22,7 +22,6 @@ function isValidBlockStructure(block) {
     typeof block.header.merkleRoot === "string" &&    //머클루트
     typeof block.header.difficulty === 'number' &&    //난이도
     typeof block.header.nonce === 'number' &&         //넌스값
-    
     typeof block.body === "object"
   ); //body데이터
 }
@@ -32,44 +31,52 @@ function isValidNewBlock(newBlock, previousBlock) {
     //새로운블럭이 잘못만든 실패면
     console.log("invalid Block Structure");
     return false;
-  } else if (newBlock.header.index !== previousBlock.header.index + 1) {
+  }
+   else if (newBlock.header.index !== previousBlock.header.index + 1) {
     //새로만든 블럭이랑 그전블럭에 인덱스가 같지않은면
     console.log("invalid index");
     return false;
-  } else if (createHash(previousBlock) !== newBlock.header.previousHash) {
+  } 
+  else if (createHash(previousBlock) !== newBlock.header.previousHash) {
     //이전해시값 비교
     console.log("invalid previousHash");
     return false;
-  } else if (
-    (newBlock.body.length === 0 &&
-      "0".repeat(64) !== newBlock.header.merkleRoot) ||
-    (newBlock.body.length !== 0 &&
-      merkle("sha256").sync(newBlock.body).root() !==
-        newBlock.header.merkleRoot)
-  ) {
-    console.log("invalid merkleRoot");
-    return false;
   }
-  return true;
+  	else if ((newBlock.body.length === 0 && ('0'.repeat(64) !== newBlock.header.merkleRoot) ||
+		newBlock.body.length !== 0 && (merkle("sha256").sync(newBlock.body).root() !== newBlock.header.merkleRoot))) {
+		console.log('Invalid merkleRoot')
+		return false;
+	}
+	else if (!isValidTimestamp(newBlock, previousBlock)) {
+		console.log("Invalid Timestamp")
+		return false;
+	}
+	else if (!hashMatchesDifficulty(createHash(newBlock), newBlock.header.difficulty)) {
+		console.log("Invalid hash")
+		return false;
+	}
+	return true;
 }
-
 
 //01/03 수업 추가
-function isValidChain(newBlock){
-  if (JSON.stringify(newBlock[0])) !== JSON.stringify(Blocks[0]){  //만약 뉴블럭의 
-      return false;
-   }
-   var tempBlocks = [newBlock[0]];
-   for(var i = 1; i <newBlock.length; i++){
-      (isValidNewBlock(newBlock[i], previousBlock[i-1])){
-        tempBlocks.push(newBlock[i]);
-      }
-      else{
-        return false;
-      }
-     
-   }
+
+function isValidChain(newBlocks){
+	if (JSON.stringify(newBlocks[0]) !== JSON.stringify(Blocks[0])){
+		return false;
+	}
+
+	var tempBlocks = [newBlocks[0]];
+	for (var i = 1; i < newBlocks.length; i++){
+		if (isValidNewBlock(newBlocks[i], tempBlocks[i - 1])) {
+			tempBlocks.push(newBlocks[i]);
+		}
+		else {
+			return false;
+		}
+	}
+	return true;
 }
+
 
 function addBlock(newBlock) {
   if (isValidNewBlock(newBlock, getLastBlock())) {
@@ -78,13 +85,11 @@ function addBlock(newBlock) {
   }
   return false;
 }
-const block = nextBlock(["new Transaction"]);
-addBlock(block);
+//const block = nextBlock(["new Transaction"]);
+//addBlock(block);
 
-console.log(Blocks);
+// console.log(Blocks);
 module.exports = {
- 
- 
-  
+
   addBlock,
 };
