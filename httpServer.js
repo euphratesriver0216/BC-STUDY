@@ -21,6 +21,7 @@ function initHttpServer() {
 
     res.send(block);
   });
+  // 알려준것
   // curl -H "Content-Type: application/json" --data "{\"data\" : [\"Anything1\",\"Anything2\"]}" http://localhost:3001/mineBlock
   //curl -H "Content-Type: application/json" --data "{\"data\":[\"Anything3\",\"Anything4\"]}" http://localhost:3001/mineBlock | python3 -m json.tool
   app.get("/version", (req, res) => {
