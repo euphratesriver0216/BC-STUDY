@@ -260,7 +260,7 @@ function findBlock(
   }
 }
 
-function getAdjustDifficulty(blocks) {
+function getDifficulty(blocks) {
   const lastBlock = blocks[blocks.length - 1];
   if (
     lastBlock.header.index !== 0 &&
@@ -293,8 +293,21 @@ function getCurrentTimestamp() {
   return Math.round(new Date().getTime() / 1000);
 }
 
+// function isValidTimestamp(newBlock, prevBlock) {
+//   if (newBlock.header.timestamp - prevBlock.header.timestamp < 5) {
+//     console.log("비정상임");
+//     return false;
+//   }
+//   if (getCurrentTimestamp() - newBlock.header.timestamp < 5) {
+//     console.log("아니야아니야");
+//     return false;
+//   }
+//   console.log("정상임");
+//   return true;
+// }
+
 function isValidTimestamp(newBlock, prevBlock) {
-  if (newBlock.header.timestamp - prevBlock.header.timestamp < 5) {
+  if (prevBlock.header.timestamp - newBlock.header.timestamp < 5) {
     console.log("비정상임");
     return false;
   }
