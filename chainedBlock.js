@@ -47,8 +47,9 @@ function creatGenesisBlock() {
   const version = getVersion(); //npm init했던 버젼 블러오기
   const index = 0; //맨처음이니깐 0
   const previousHash = "0".repeat(64);
-  const timestamp = 1231006505; //2009년01월03일 6:15pm(UTC)비트코인이 최초로 만들어진 시간 //parseInt(Date.now() / 1000);      //parseInt인트로변환해주고 밀리세컨드라서 1000으로나눠주고 저장
-  const body = ["hello block"];
+  // const timestamp = 1231006505; //2009년01월03일 6:15pm(UTC)비트코인이 최초로 만들어진 시간 //parseInt(Date.now() / 1000);      //parseInt인트로변환해주고 밀리세컨드라서 1000으로나눠주고 저장
+  const timestamp = parseInt(Date.now() / 1000);
+  const body = ["ming"];
   const tree = merkle("sha256").sync(body);
   const merkleRoot = tree.root() || "0".repeat(64); //없으면
   const difficulty = 0;
@@ -289,14 +290,19 @@ function getAdjustDifficulty(lastBlock, blocks) {
 }
 
 function getCurrentTimestamp() {
-  return Math.round(Date().getTime() / 1000);
+  return Math.round(new Date().getTime() / 1000);
 }
 
 function isValidTimestamp(newBlock, prevBlock) {
-  if (newBlock.header.timestamp - prevBlock.header.timestamp > 60) return false;
-
-  if (getCurrentTimestamp() - newBlock.header.timestamp > 60) return false;
-
+  if (newBlock.header.timestamp - prevBlock.header.timestamp < 5) {
+    console.log("비정상임");
+    return false;
+  }
+  if (getCurrentTimestamp() - newBlock.header.timestamp < 5) {
+    console.log("아니야아니야");
+    return false;
+  }
+  console.log("정상임");
   return true;
 }
 
@@ -309,4 +315,5 @@ module.exports = {
   getVersion,
   getBlocks,
   creatGenesisBlock,
+  isValidTimestamp,
 };

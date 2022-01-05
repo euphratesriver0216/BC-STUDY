@@ -22,7 +22,7 @@ function initWallet() {
 
   // wallet 폴더가 없으면
   if (!fs.existsSync("wallet/")) {
-    // 폴더 만드렁
+    // 폴더 만들어~
     fs.mkdirSync("wallet/");
   }
   // wallet 안에 privateKeyLocation이름에 해당하는 폴더가 없으면
