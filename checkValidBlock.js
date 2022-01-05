@@ -1,4 +1,4 @@
-// 블록 구조가 유요한지
+// 블록 구조가 유요한지 확인하는
 // 현재 블록의 인덱스가 이전블록의 인덱스보다 1만큼 큰지
 // 이전 블록의 해시값과 현재 블록의 이전 해시가 같은지
 // 데이터 필드로부터 계산한 머클루트와 블록 헤더의 머클루트가 동일한지
@@ -8,6 +8,7 @@ const {
   Blocks,
   getLastBlock,
   nextBlock,
+  isValidTimestamp,
 } = require("./chainedBlock");
 
 function isValidBlockStructure(block) {
@@ -24,18 +25,19 @@ function isValidBlockStructure(block) {
   ); //body데이터
 }
 
+//새블럭 검증하기
 function isValidNewBlock(newBlock, previousBlock) {
   if (isValidBlockStructure(newBlock) === false) {
     //새로운블럭이 잘못만든 실패면
-    console.log("invalid Block Structure");
+    console.log("잘못된 블럭구조야!");
     return false;
   } else if (newBlock.header.index !== previousBlock.header.index + 1) {
     //새로만든 블럭이랑 그전블럭에 인덱스가 같지않은면
-    console.log("invalid index");
+    console.log("잘못된 인덱스야@@");
     return false;
   } else if (createHash(previousBlock) !== newBlock.header.previousHash) {
     //이전해시값 비교
-    console.log("invalid previousHash");
+    console.log("ㅈ");
     return false;
   } else if (
     (newBlock.body.length === 0 &&
@@ -46,11 +48,10 @@ function isValidNewBlock(newBlock, previousBlock) {
   ) {
     console.log("Invalid merkleRoot");
     return false;
+  } else if (!isValidTimestamp(newBlock, previousBlock)) {
+    console.log("Invalid Timestamp");
+    return false;
   }
-  //  else if (!isValidTimestamp(newBlock, previousBlock)) {
-  //   console.log("Invalid Timestamp");
-  //   return false;
-  // }
   // else if (
   //   !hashMatchesDifficulty(createHash(newBlock), newBlock.header.difficulty)
   // ) {
